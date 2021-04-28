@@ -1,13 +1,21 @@
 namespace SpriteKind {
     export const explode4 = SpriteKind.create()
     export const explode = SpriteKind.create()
+    export const enemyproj = SpriteKind.create()
+    export const monkey = SpriteKind.create()
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (jump_counter == 0) {
+        Hero.vy = -150
+        jump_counter += 1
+    }
+})
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     jump_counter = 0
     if (Hero.vy > 300) {
         scene.cameraShake(2, 200)
         for (let index = 0; index < 50; index++) {
-            boom = sprites.create(explode._pickRandom(), SpriteKind.explode)
+            boom = sprites.create(explode2._pickRandom(), SpriteKind.explode)
             boom.setPosition(Hero.x - randint(-10, 10), Hero.y + 10)
             boom.setVelocity(randint(-40, 40), randint(-10, -70))
             boom.ay = 50
@@ -29,12 +37,6 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
         }
     }
 })
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (jump_counter == 0) {
-        Hero.vy = -150
-        jump_counter += 1
-    }
-})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (controller.right.isPressed()) {
         if (dashcooldown.value == dashcooldown.max) {
@@ -49,9 +51,11 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         }
     }
 })
+let fire: Sprite = null
+let banan: Sprite = null
 let boom: Sprite = null
 let dashcooldown: StatusBarSprite = null
-let explode: Image[] = []
+let explode2: Image[] = []
 let jump_counter = 0
 let Hero: Sprite = null
 Hero = sprites.create(img`
@@ -104,9 +108,44 @@ let Villan = sprites.create(img`
     .....eefeedddfeeddffeeedd.....
     ..eeeefeeeeeddfeeedfeeeeeed...
     `, SpriteKind.Enemy)
+let monkey = sprites.create(img`
+    e........e..............................
+    e.......ee..............................
+    eddddbeee...............................
+    .dddeee.................................
+    .eeee.....eeeb..........................
+    .eee.....eeeeeb.........................
+    .eee....befefeb.........................
+    .beeeeebdddeeeb.........................
+    ..beeeeedddeeeb.........5f..............
+    ...beeeeeeeeeeeee......555..............
+    .......eeeeeeeeeeee....55...............
+    ......eeeddddeeeeeee...55...............
+    ......edddddddeeeeee...dd...............
+    .....eedddddddeebeee..edd...............
+    .....eedddddddee.beeeeedd...............
+    .....eeddddddeee..beeee55...............
+    ......eeeeeeeee....bbb.55...............
+    .....eeeeeeeeeee........55..............
+    ....eeeeeb..eeeb........................
+    ....eeebb...eeeb........................
+    ....eee......eeb........................
+    ....eeb.....eeeb........................
+    ....eb.....eeeb.........................
+    ....eb.....eeb..........................
+    ...dddb....dddb.........................
+    ....ddb....ddb..........................
+    ........................................
+    ........................................
+    ........................................
+    ........................................
+    `, SpriteKind.monkey)
 Hero.setPosition(75, -4)
+Hero.setVelocity(0, 350)
 jump_counter = 0
-explode = [img`
+let villlanalive = 1
+let monkeyalive = 1
+explode2 = [img`
     2 . 
     . . 
     `, img`
@@ -126,6 +165,9 @@ dashcooldown = statusbars.create(11, 3, StatusBarKind.Energy)
 dashcooldown.attachToSprite(Hero, 3, 0)
 scene.setBackgroundColor(13)
 tiles.setTilemap(tilemap`level1`)
+tiles.placeOnRandomTile(Villan, assets.tile`myTile7`)
+tiles.placeOnRandomTile(monkey, assets.tile`myTile12`)
+monkey.y += 15
 let sign = sprites.create(img`
     ............................................................
     ............................................................
@@ -3273,6 +3315,102 @@ sign_3.setPosition(170, 110)
 sign_4.setPosition(225, 106)
 scene.cameraFollowSprite(Hero)
 dashcooldown.setBarBorder(1, 15)
+game.onUpdateInterval(1000, function () {
+    banan = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . f f 5 . . . . . . . . 
+        . . . . . . . 5 5 . . . . . . . 
+        . . . . . . . 5 5 5 . . . . . . 
+        . . . . . . . 5 5 5 . . . . . . 
+        . . . . . . . . 5 5 . . . . . . 
+        . . . . . . . . 5 5 . . . . . . 
+        . . . . . . . 5 5 5 . . . . . . 
+        . . . . . . . 5 5 5 . . . . . . 
+        . . . . . . 5 5 5 . . . . . . . 
+        . . . . . 5 5 . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, monkey, Hero.x - monkey.x, Hero.y - monkey.y - 30)
+    banan.ay = 60
+    banan.setFlag(SpriteFlag.GhostThroughWalls, true)
+    animation.runImageAnimation(
+    banan,
+    [img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . f f 5 . . . . . . 
+        . . . . . . . . . 5 5 . . . . . 
+        . . . . . . . . . 5 5 5 . . . . 
+        . . . . . . . . . 5 5 5 . . . . 
+        . . . . . . . . . . 5 5 . . . . 
+        . . . . . . . . . . 5 5 . . . . 
+        . . . . . . . . . 5 5 5 . . . . 
+        . . . . . . . . . 5 5 5 . . . . 
+        . . . . . . . . 5 5 5 . . . . . 
+        . . . . . . . 5 5 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . 5 5 5 5 5 5 . . . . . 
+        . . . . 5 5 5 5 5 5 5 5 . . . . 
+        . . f f 5 . . . . 5 5 5 . . . . 
+        . . . . . . . . . . 5 5 . . . . 
+        . . . . . . . . . . 5 5 . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . 5 5 5 5 . . . . . . . . 
+        . . . 5 5 5 5 . . . . . . . . . 
+        . . 5 5 5 . . . . . . . . . . . 
+        . . 5 5 5 . . . . . . . . . . . 
+        . . 5 5 5 . . . . . . . . . . . 
+        . . 5 5 5 . . . . . . . . . . . 
+        . . . 5 5 5 . . . . . . . . . . 
+        . . . 5 5 5 . . . . . . . . . . 
+        . . . . . 5 f f . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `,img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . 5 5 . . . . . . . f . . . 
+        . . . 5 5 . . . . 5 5 5 f . . . 
+        . . . 5 5 5 . . 5 5 5 5 5 . . . 
+        . . . . 5 5 5 5 5 5 5 5 . . . . 
+        . . . . 5 5 5 5 5 5 5 . . . . . 
+        . . . . . 5 5 5 5 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `],
+    100,
+    true
+    )
+})
 game.onUpdateInterval(10, function () {
     dashcooldown.value += 1
 })
@@ -3361,5 +3499,14 @@ game.onUpdateInterval(300, function () {
         100,
         false
         )
+    }
+})
+game.onUpdateInterval(200, function () {
+    if (villlanalive != 0) {
+        fire = sprites.create(explode2._pickRandom(), SpriteKind.enemyproj)
+        fire.setPosition(Villan.x, Villan.y)
+        fire.setVelocity(randint(-5, 5), -50)
+        fire.ay = 15
+        fire.lifespan = 1700
     }
 })
