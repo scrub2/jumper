@@ -5,12 +5,6 @@ namespace SpriteKind {
     export const monkey = SpriteKind.create()
     export const dragon = SpriteKind.create()
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (jump_counter == 0) {
-        Hero.vy = -150
-        jump_counter += 1
-    }
-})
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     jump_counter = 0
     if (Hero.vy > 300) {
@@ -38,6 +32,18 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
         }
     }
 })
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (jump_counter == 0) {
+        Hero.vy = -150
+        jump_counter += 1
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile24`, function (sprite, location) {
+    Hero.vy += -50
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile32`, function (sprite, location) {
+    Hero.vy += -10
+})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (controller.right.isPressed()) {
         if (dashcooldown.value == dashcooldown.max) {
@@ -52,13 +58,83 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         }
     }
 })
-let banan: Sprite = null
-let boss: Sprite = null
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Player, function (sprite, otherSprite) {
+	
+})
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile25`, function (sprite, location) {
+    banan.destroy()
+    boom.destroy()
+    jungletrap_1.destroy()
+    dragon.destroy()
+    fire.destroy()
+    Hero.destroy()
+    monkey2.destroy()
+    monkey.destroy()
+    sign.destroy()
+    sign_3.destroy()
+    sign_4.destroy()
+    Villan.destroy()
+    monkeyalive = 0
+    villlanalive = 0
+    dragonalive = 0
+    monke2_alive = 0
+    level2()
+})
+info.onCountdownEnd(function () {
+    tiles.setTilemap(tilemap`level4`)
+})
+function level2 () {
+    tiles.setTilemap(tilemap`level2`)
+    Hero = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . f f f f f . . . . . . 
+        . . . f f b b b b f f f . . . . 
+        . . f b b b d f f f b b f . . . 
+        . . f f f d d d d b b b f . . . 
+        . f b d f d 1 f b 1 f b b f . . 
+        . f b d f d d b b b b b f f . . 
+        . f b b b b 2 2 2 2 2 b b f . . 
+        . f b f f b 2 f f f 2 b c f . . 
+        . f f f b b 2 2 2 2 2 b c f . . 
+        . . f c c b b b b b f f f . . . 
+        . . f c c c f c c f f c f . . . 
+        . . . f f c f c c c f f . . . . 
+        . . . . . f f f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Player)
+    Hero.setPosition(126, -2)
+    Hero.vy = 20
+    dashcooldown.attachToSprite(Hero, 3, 0)
+    scene.cameraFollowSprite(Hero)
+    dashcooldown.setBarBorder(1, 15)
+}
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile14`, function (sprite, location) {
+    if (jungle_trap == 0) {
+        jungle_trap += 1
+        tiles.setTilemap(tilemap`level1`)
+        info.startCountdown(5)
+    }
+})
 let fire: Sprite = null
+let jungletrap_1: Sprite = null
+let banan: Sprite = null
 let boom: Sprite = null
+let sign_4: Sprite = null
+let sign_3: Sprite = null
+let sign: Sprite = null
 let dashcooldown: StatusBarSprite = null
 let explode2: Image[] = []
+let jungle_trap = 0
+let dragonalive = 0
+let monke2_alive = 0
+let monkeyalive = 0
+let villlanalive = 0
 let jump_counter = 0
+let dragon: Sprite = null
+let monkey2: Sprite = null
+let monkey: Sprite = null
+let Villan: Sprite = null
 let Hero: Sprite = null
 Hero = sprites.create(img`
     . . . . . . . . . . . . . . . . 
@@ -78,7 +154,7 @@ Hero = sprites.create(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Player)
-let Villan = sprites.create(img`
+Villan = sprites.create(img`
     ..............................
     ..............................
     ..............................
@@ -110,7 +186,7 @@ let Villan = sprites.create(img`
     .....eefeedddfeeddffeeedd.....
     ..eeeefeeeeeddfeeedfeeeeeed...
     `, SpriteKind.Enemy)
-let monkey = sprites.create(img`
+monkey = sprites.create(img`
     e........e..............................
     e.......ee..............................
     eddddbeee...............................
@@ -142,7 +218,7 @@ let monkey = sprites.create(img`
     ........................................
     ........................................
     `, SpriteKind.monkey)
-let monkey2 = sprites.create(img`
+monkey2 = sprites.create(img`
     e........e..............................
     e.......ee..............................
     eddddbeee...............................
@@ -174,7 +250,7 @@ let monkey2 = sprites.create(img`
     ........................................
     ........................................
     `, SpriteKind.monkey)
-let dragon = sprites.create(img`
+dragon = sprites.create(img`
     ..............................
     ..............................
     ..............................
@@ -209,10 +285,11 @@ let dragon = sprites.create(img`
 Hero.setPosition(75, -4)
 Hero.setVelocity(0, 350)
 jump_counter = 0
-let villlanalive = 1
-let monkeyalive = 1
-let monke2_alive = 1
-let dragonalive = 1
+villlanalive = 1
+monkeyalive = 1
+monke2_alive = 1
+dragonalive = 1
+jungle_trap = 0
 explode2 = [img`
     2 . 
     . . 
@@ -232,14 +309,14 @@ explode2 = [img`
 dashcooldown = statusbars.create(11, 3, StatusBarKind.Energy)
 dashcooldown.attachToSprite(Hero, 3, 0)
 scene.setBackgroundColor(13)
-tiles.setTilemap(tilemap`level1`)
+tiles.setTilemap(tilemap`level4`)
 tiles.placeOnRandomTile(Villan, assets.tile`myTile7`)
 tiles.placeOnRandomTile(monkey, assets.tile`myTile12`)
 tiles.placeOnRandomTile(monkey2, assets.tile`myTile12`)
 tiles.placeOnRandomTile(dragon, assets.tile`myTile7`)
 monkey.y += 15
 monkey2.y += 16
-let sign = sprites.create(img`
+sign = sprites.create(img`
     ............................................................
     ............................................................
     ............................................................
@@ -301,7 +378,7 @@ let sign = sprites.create(img`
     ............................................................
     ............................................................
     `, SpriteKind.Player)
-let sign_3 = sprites.create(img`
+sign_3 = sprites.create(img`
     ........................................
     ........................................
     ........................................
@@ -343,7 +420,7 @@ let sign_3 = sprites.create(img`
     ........................................
     ........................................
     `, SpriteKind.Player)
-let sign_4 = sprites.create(img`
+sign_4 = sprites.create(img`
     ............................................................
     ............................................................
     ...........................fff..............................
@@ -3401,7 +3478,7 @@ game.onUpdateInterval(2000, function () {
     if (game.runtime() > 6000) {
         let bosscount = 0
         if (bosscount == 0) {
-            boss = sprites.create(img`
+            jungletrap_1 = sprites.create(img`
                 ............................................................
                 ............................................................
                 ............................................................
