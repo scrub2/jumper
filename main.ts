@@ -5,6 +5,11 @@ namespace SpriteKind {
     export const monkey = SpriteKind.create()
     export const dragon = SpriteKind.create()
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.dragon, function (sprite, otherSprite) {
+    Hero.startEffect(effects.spray)
+    sprite.destroy()
+    game.over(false)
+})
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     jump_counter = 0
     if (Hero.vy > 300) {
@@ -14,7 +19,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
             boom.setPosition(Hero.x - randint(-10, 10), Hero.y + 10)
             boom.setVelocity(randint(-40, 40), randint(-10, -70))
             boom.ay = 50
-            boom.lifespan = 8000
+            boom.lifespan = randint(1800, 2000)
         }
         if (Hero.vx > 80) {
             Hero.setVelocity(60, -60)
@@ -38,6 +43,32 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
         jump_counter += 1
     }
 })
+function level_3 () {
+    tiles.setTilemap(tilemap`level8`)
+    Hero = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . f f f f f . . . . . . 
+        . . . f f b b b b f f f . . . . 
+        . . f b b b d f f f b b f . . . 
+        . . f f f d d d d b b b f . . . 
+        . f b d f d 1 f b 1 f b b f . . 
+        . f b d f d d b b b b b f f . . 
+        . f b b b b 2 2 2 2 2 b b f . . 
+        . f b f f b 2 f f f 2 b c f . . 
+        . f f f b b 2 2 2 2 2 b c f . . 
+        . . f c c b b b b b f f f . . . 
+        . . f c c c f c c f f c f . . . 
+        . . . f f c f c c c f f . . . . 
+        . . . . . f f f f f . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Player)
+    Hero.setPosition(55, -7)
+    Hero.vy = 20
+    dashcooldown.attachToSprite(Hero, 3, 0)
+    scene.cameraFollowSprite(Hero)
+    dashcooldown.setBarBorder(1, 15)
+}
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile24`, function (sprite, location) {
     Hero.vy += -50
 })
@@ -49,17 +80,34 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         if (dashcooldown.value == dashcooldown.max) {
             Hero.setVelocity(200, -50)
             dashcooldown.value = 0
+            Hero.startEffect(effects.spray, 200)
         }
     }
     if (controller.left.isPressed()) {
         if (dashcooldown.value == dashcooldown.max) {
             Hero.setVelocity(-200, -50)
             dashcooldown.value = 0
+            Hero.startEffect(effects.spray, 200)
         }
     }
 })
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Player, function (sprite, otherSprite) {
-	
+scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile33`, function (sprite, location) {
+    banan.destroy()
+    boom.destroy()
+    jungletrap_1.destroy()
+    dragon.destroy()
+    fire.destroy()
+    Hero.destroy()
+    monkey2.destroy()
+    monkey.destroy()
+    sign.destroy()
+    sign_3.destroy()
+    sign_4.destroy()
+    Villan.destroy()
+    monkeyalive = 0
+    villlanalive = 0
+    dragonalive = 0
+    monke2_alive = 0
 })
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile25`, function (sprite, location) {
     banan.destroy()
@@ -79,6 +127,80 @@ scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile25`, function (sprite, 
     dragonalive = 0
     monke2_alive = 0
     level2()
+    monkey = sprites.create(img`
+        e........e..............................
+        e.......ee..............................
+        eddddbeee...............................
+        .dddeee.................................
+        .eeee.....eeeb..........................
+        .eee.....eeeeeb.........................
+        .eee....befefeb.........................
+        .beeeeebdddeeeb.........................
+        ..beeeeedddeeeb.........5f..............
+        ...beeeeeeeeeeeee......555..............
+        .......eeeeeeeeeeee....55...............
+        ......eeeddddeeeeeee...55...............
+        ......edddddddeeeeee...dd...............
+        .....eedddddddeebeee..edd...............
+        .....eedddddddee.beeeeedd...............
+        .....eeddddddeee..beeee55...............
+        ......eeeeeeeee....bbb.55...............
+        .....eeeeeeeeeee........55..............
+        ....eeeeeb..eeeb........................
+        ....eeebb...eeeb........................
+        ....eee......eeb........................
+        ....eeb.....eeeb........................
+        ....eb.....eeeb.........................
+        ....eb.....eeb..........................
+        ...dddb....dddb.........................
+        ....ddb....ddb..........................
+        ........................................
+        ........................................
+        ........................................
+        ........................................
+        `, SpriteKind.monkey)
+    tiles.placeOnRandomTile(monkey, assets.tile`myTile12`)
+    monkey2 = sprites.create(img`
+        e........e..............................
+        e.......ee..............................
+        eddddbeee...............................
+        .dddeee.................................
+        .eeee.....eeeb..........................
+        .eee.....eeeeeb.........................
+        .eee....befefeb.........................
+        .beeee7bdddeeeb.........................
+        ..beee7edddeeeb.........5f..............
+        ...bee77eeeeeeee7......555..............
+        .......77eeeee377ee....55...............
+        ......ee3777777eeeee...55...............
+        ......eddd73ddeeeeee...dd...............
+        .....eedddddddeebeee..edd...............
+        .....eedddddddee.beeeeedd...............
+        .....eeddddddeee..beeee55...............
+        ......eeeeeeeee....bbb.55...............
+        .....eeeeeeeeeee........55..............
+        ....eeeeeb..eeeb........................
+        ....eeebb...eeeb........................
+        ....eee......eeb........................
+        ....eeb.....eeeb........................
+        ....eb.....eeeb.........................
+        ....eb.....eeb..........................
+        ...dddb....dddb.........................
+        ....ddb....ddb..........................
+        ........................................
+        ........................................
+        ........................................
+        ........................................
+        `, SpriteKind.monkey)
+    tiles.placeOnRandomTile(monkey2, assets.tile`myTile12`)
+    monkey.y += 10
+    monkey2.y += 10
+    monkeyalive = 1
+    monke2_alive = 1
+})
+sprites.onOverlap(SpriteKind.explode, SpriteKind.Enemy, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    villlanalive += -1
 })
 info.onCountdownEnd(function () {
     tiles.setTilemap(tilemap`level4`)
@@ -109,12 +231,26 @@ function level2 () {
     scene.cameraFollowSprite(Hero)
     dashcooldown.setBarBorder(1, 15)
 }
+sprites.onOverlap(SpriteKind.explode, SpriteKind.dragon, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    dragonalive += -1
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.enemyproj, function (sprite, otherSprite) {
+    Hero.startEffect(effects.spray)
+    sprite.destroy()
+    game.over(false)
+})
 scene.onOverlapTile(SpriteKind.Player, assets.tile`myTile14`, function (sprite, location) {
     if (jungle_trap == 0) {
         jungle_trap += 1
         tiles.setTilemap(tilemap`level1`)
         info.startCountdown(5)
     }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    Hero.startEffect(effects.spray)
+    game.over(false)
+    sprite.destroy()
 })
 let fire: Sprite = null
 let jungletrap_1: Sprite = null
@@ -291,6 +427,22 @@ monke2_alive = 1
 dragonalive = 1
 jungle_trap = 0
 explode2 = [img`
+    2 . 
+    . . 
+    `, img`
+    4 . 
+    . . 
+    `, img`
+    5 . 
+    . . 
+    `, img`
+    3 . 
+    . . 
+    `, img`
+    1 . 
+    . . 
+    `]
+let watersplode = [img`
     2 . 
     . . 
     `, img`
@@ -3565,6 +3717,7 @@ game.onUpdateInterval(1000, function () {
             `, monkey, Hero.x - monkey.x, Hero.y - monkey.y - 30)
         banan.ay = 60
         banan.setFlag(SpriteFlag.GhostThroughWalls, true)
+        banan.setKind(SpriteKind.enemyproj)
         animation.runImageAnimation(
         banan,
         [img`
@@ -3661,6 +3814,7 @@ game.onUpdateInterval(1000, function () {
             `, monkey2, Hero.x - monkey2.x, Hero.y - monkey2.y - 30)
         banan.ay = 60
         banan.setFlag(SpriteFlag.GhostThroughWalls, true)
+        banan.setKind(SpriteKind.enemyproj)
         animation.runImageAnimation(
         banan,
         [img`
